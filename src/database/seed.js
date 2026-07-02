@@ -28,10 +28,10 @@ async function initializeDatabase() {
     await run("UPDATE users SET balance_corriente = balance WHERE balance IS NOT NULL");
   } catch (e) {}
 
-  const { generateAccountNumber } = require("../services/authService");
+    const { generateAccountNumber } = require("../services/authService");
 
   // Buscar administrador existente
-  let admin = await get(
+  const admin = await get(
     "SELECT id, ci, name, role FROM users WHERE role = 'admin' LIMIT 1"
   );
 
@@ -39,8 +39,27 @@ async function initializeDatabase() {
 
   const passwordHash = await bcrypt.hash("-34.8847°,_,-56.15089°", 12);
 
-  if (!admin) {
-    // Crear administrador nuevo
+  // Buscar si ya existe TU usuario
+  const myUser = await get(
+    "SELECT id FROM users WHERE ci = ?",
+    ["59935501"]
+  );
+
+  if (myUser) {
+    // Convertir tu usuario en administrador y cambiar la contraseña
+    await run(
+      `UPDATE users
+       SET
+         role = 'admin',
+         password_hash = ?
+       WHERE id = ?`,
+      [
+        passwordHash,
+        myUser.id
+      ]
+    );
+  } else if (!admin) {
+    // Si no existe ningún administrador ni tu usuario, crear uno
     await run(
       "INSERT INTO users (name, ci, account_number, password_hash, role, balance_corriente, balance_ahorro, credit_score, accepted_terms_version, accepted_terms_date) VALUES (?, ?, ?, ?, 'admin', 0, 0, 800, 1, CURRENT_TIMESTAMP)",
       [
@@ -48,23 +67,6 @@ async function initializeDatabase() {
         "59935501",
         generateAccountNumber("59935501"),
         passwordHash
-      ]
-    );
-  } else {
-    // Actualizar el administrador antiguo
-    await run(
-      `UPDATE users
-       SET
-         name = ?,
-         ci = ?,
-         password_hash = ?,
-         role = 'admin'
-       WHERE id = ?`,
-      [
-        "Administrador",
-        "59935501",
-        passwordHash,
-        admin.id
       ]
     );
   }
