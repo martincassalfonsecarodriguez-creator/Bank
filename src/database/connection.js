@@ -1,6 +1,5 @@
 const fs = require("fs");
 const path = require("path");
-const sqlite3 = require("sqlite3").verbose();
 const { Pool } = require("pg");
 const config = require("../config/env");
 
@@ -14,6 +13,7 @@ if (engine === "postgres") {
     ssl: config.databaseUrl.includes("localhost") ? false : { rejectUnauthorized: false }
   });
 } else {
+  const sqlite3 = require("sqlite3").verbose();
   fs.mkdirSync(path.dirname(config.databaseFile), { recursive: true });
   db = new sqlite3.Database(config.databaseFile);
   db.run("PRAGMA foreign_keys = ON");
