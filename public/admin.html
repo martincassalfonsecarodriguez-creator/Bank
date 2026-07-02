@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Banco | Banco Familiar</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/admin.html">Banco Familiar</a>
+    <nav>
+      <a class="button small secondary" href="/dashboard.html">Mi panel</a>
+      <button id="logout" class="button small ghost">Salir</button>
+    </nav>
+  </header>
+
+  <main class="layout">
+    <section class="panel">
+      <p class="eyebrow">Panel del banco</p>
+      <h1>Administracion</h1>
+      <div class="actions left">
+        <a class="button secondary" href="/api/admin/backup">Descargar backup</a>
+        <button id="run-taxes-btn" class="button secondary">Cobrar Impuestos (Mensual)</button>
+      </div>
+      <div id="admin-stats" style="margin-top: 15px; padding: 15px; background: #f9f9f9; border-radius: 8px;">
+        <p><strong>Dinero Total Corriente:</strong> <span id="stat-corriente">0</span></p>
+        <p><strong>Dinero Total Ahorro:</strong> <span id="stat-ahorro">0</span></p>
+        <p><strong>Préstamos Aprobados:</strong> <span id="stat-prestamos">0</span></p>
+      </div>
+      <form id="announcement-form" class="form inline" style="margin-top: 15px;">
+        <label>Anuncio global<input name="message" required></label>
+        <button class="button primary" type="submit">Enviar anuncio</button>
+      </form>
+    </section>
+
+    <section class="grid two">
+      <article class="panel">
+        <h2>Usuarios</h2>
+        <div id="users" class="list"></div>
+      </article>
+      <article class="panel">
+        <h2>Prestamos</h2>
+        <div id="loans" class="list"></div>
+      </article>
+    </section>
+
+    <section class="panel">
+      <h2>Todas las transacciones</h2>
+      <div id="transactions" class="table-wrap"></div>
+    </section>
+    <p id="message" class="message"></p>
+  </main>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/socket.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Registro | Banco Familiar</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="auth-page">
+  <main class="auth-shell">
+    <section class="auth-card">
+      <a class="brand" href="/">Banco Familiar</a>
+      <h1>Crear cuenta</h1>
+      <form id="register-form" class="form">
+        <label>Nombre<input name="name" autocomplete="name" required minlength="2"></label>
+        <label>CI<input name="ci" autocomplete="username" required minlength="3"></label>
+        <label>Contrasena<input name="password" type="password" autocomplete="new-password" required minlength="6"></label>
+        
+        <label class="checkbox-label">
+          <input type="checkbox" name="acceptTerms" id="acceptTerms" required>
+          <span>Acepto los <a href="#" id="viewTermsLink">Términos y Condiciones</a></span>
+        </label>
+
+        <button class="button primary" type="submit">Registrarme</button>
+      </form>
+      <p class="muted">Ya tienes cuenta? <a href="/login.html">Inicia sesion</a></p>
+      <p id="message" class="message"></p>
+    </section>
+  </main>
+
+  <dialog id="termsModal" class="modal">
+    <div class="modal-content">
+      <h2>Términos y Condiciones</h2>
+      <div id="termsText" class="terms-text" style="white-space: pre-wrap; font-size: 0.9em; max-height: 50vh; overflow-y: auto; text-align: left; padding: 10px; border: 1px solid #ccc; margin-bottom: 15px;">Cargando...</div>
+      <button id="closeTermsBtn" class="button secondary">Cerrar</button>
+    </div>
+  </dialog>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script>
+    let currentTermsVersion = 1;
+    const termsModal = document.getElementById('termsModal');
+    const viewTermsLink = document.getElementById('viewTermsLink');
+    const closeTermsBtn = document.getElementById('closeTermsBtn');
+    const termsTextContainer = document.getElementById('termsText');
+
+    viewTermsLink.addEventListener('click', async (e) => {
+      e.preventDefault();
+      try {
+        const res = await api('/api/auth/terms');
+        termsTextContainer.textContent = res.content;
+        currentTermsVersion = res.version;
+        termsModal.showModal();
+      } catch (error) {
+        termsTextContainer.textContent = "Error al cargar los términos.";
+        termsModal.showModal();
+      }
+    });
+
+    closeTermsBtn.addEventListener('click', () => {
+      termsModal.close();
+    });
+  </script>
+</body>
+</html>

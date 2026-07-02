@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Iniciar sesion | Banco Familiar</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="auth-page">
+  <main class="auth-shell">
+    <section class="auth-card">
+      <a class="brand" href="/">Banco Familiar</a>
+      <h1>Iniciar sesion</h1>
+      <form id="login-form" class="form">
+        <label>CI<input name="ci" autocomplete="username" required></label>
+        <label>Contrasena<input name="password" type="password" autocomplete="current-password" required></label>
+        <button class="button primary" type="submit">Entrar</button>
+      </form>
+      <p class="muted">No tienes cuenta? <a href="/register.html">Registrate</a></p>
+      <p id="message" class="message"></p>
+    </section>
+  </main>
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Panel | Banco Familiar</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/dashboard.html">Banco Familiar</a>
+    <nav>
+      <span id="user-name"></span>
+      <button id="ranking-btn" class="button small secondary">Ranking Global</button>
+      <a id="admin-link" class="button small secondary hidden" href="/admin.html">Banco</a>
+      <button id="logout" class="button small ghost">Salir</button>
+    </nav>
+  </header>
+
+  <main class="layout">
+    <section class="grid three">
+      <article class="panel balance-panel">
+        <p class="eyebrow">Corriente</p>
+        <h1 id="balance">0</h1>
+        <p class="muted">Nº de cuenta: <strong id="account-number"></strong></p>
+      </article>
+      <article class="panel balance-panel">
+        <p class="eyebrow">Ahorro (Rendimiento 0.001% diario)</p>
+        <h1 id="balance-ahorro">0</h1>
+      </article>
+      <article class="panel balance-panel">
+        <p class="eyebrow">Puntaje Crediticio</p>
+        <h1 id="credit-score">500</h1>
+        <p class="muted">Categoría: <strong id="credit-category">Regular</strong></p>
+        <button id="view-credit-history" class="button small ghost" style="margin-top: 10px;">Ver historial</button>
+      </article>
+    </section>
+
+    <section class="grid three">
+      <article class="panel">
+        <h2>Mover Dinero</h2>
+        <form id="internal-transfer-form" class="form compact">
+          <label>Origen
+            <select name="fromAccount" required>
+              <option value="corriente">Corriente a Ahorro</option>
+              <option value="ahorro">Ahorro a Corriente</option>
+            </select>
+          </label>
+          <label>Monto<input name="amount" type="number" min="1" step="1" required></label>
+          <button class="button primary" type="submit">Mover</button>
+        </form>
+      </article>
+
+      <article class="panel">
+        <h2>Transferir a Terceros</h2>
+        <form id="transfer-form" class="form compact">
+          <label>CI destino<input name="toCi" required></label>
+          <label>Monto<input name="amount" type="number" min="1" step="1" required></label>
+          <button class="button primary" type="submit">Enviar</button>
+        </form>
+      </article>
+
+      <article class="panel">
+        <h2>Solicitar prestamo</h2>
+        <form id="loan-form" class="form compact">
+          <label>Monto<input name="amount" type="number" min="1" step="1" required></label>
+          <button class="button primary" type="submit">Solicitar</button>
+        </form>
+      </article>
+    </section>
+
+    <section class="grid three">
+      <article class="panel">
+        <h2>Notificaciones</h2>
+        <div id="notifications" class="list"></div>
+      </article>
+      <article class="panel">
+        <h2>Prestamos</h2>
+        <div id="loans" class="list"></div>
+      </article>
+      <article class="panel">
+        <h2>Historial</h2>
+        <div id="transactions" class="list"></div>
+      </article>
+    </section>
+    <p id="message" class="message"></p>
+  </main>
+
+  <dialog id="rankingModal" class="modal">
+    <div class="modal-content">
+      <h2>Ranking Global de Patrimonio</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Pos</th>
+            <th>Nombre</th>
+            <th>Nº Cuenta</th>
+            <th>Patrimonio</th>
+          </tr>
+        </thead>
+        <tbody id="ranking-body"></tbody>
+      </table>
+      <button class="button secondary close-modal" data-modal="rankingModal">Cerrar</button>
+    </div>
+  </dialog>
+
+  <dialog id="creditHistoryModal" class="modal">
+    <div class="modal-content">
+      <h2>Historial de Puntaje Crediticio</h2>
+      <div id="credit-history-list" class="list" style="max-height: 50vh; overflow-y: auto;"></div>
+      <button class="button secondary close-modal" data-modal="creditHistoryModal">Cerrar</button>
+    </div>
+  </dialog>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/socket.js"></script>
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>
