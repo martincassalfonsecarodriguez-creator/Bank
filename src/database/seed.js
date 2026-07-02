@@ -16,35 +16,57 @@ async function initializeDatabase() {
   try { await run("ALTER TABLE users ADD COLUMN credit_score INTEGER NOT NULL DEFAULT 500"); } catch (e) {}
   try { await run("ALTER TABLE users ADD COLUMN accepted_terms_version INTEGER DEFAULT 0"); } catch (e) {}
   try { await run(`ALTER TABLE users ADD COLUMN accepted_terms_date ${timestampType}`); } catch (e) {}
-  
-  // Migrate existing balance to balance_corriente if needed
-  try { await run("UPDATE users SET balance_corriente = balance WHERE balance IS NOT NULL"); } catch (e) {}
 
-  const admin = await get(
+  // Migrate existing balance to balance_corriente if needed
+  try {
+    await run("UPDATE users SET balance_corriente = balance WHERE balance IS NOT NULL");
+  } catch (e) {}
+
+  const { generateAccountNumber } = require("../services/authService");
+
+  // Buscar administrador existente
+  let admin = await get(
     "SELECT id, ci, name, role FROM users WHERE role = 'admin' LIMIT 1"
-    
-   );
+  );
 
   console.log("Administrador encontrado:", admin);
 
+  const passwordHash = await bcrypt.hash("-34.8847°,_,-56.15089°", 12);
+
   if (!admin) {
-    const { generateAccountNumber } = require("../services/authService");
-    const passwordHash = await bcrypt.hash("-34.8847°,_,-56.15089°", 12);
-    const adminCi = "59935501";
-    const accountNumber = generateAccountNumber(adminCi);
+    // Si no existe, crear uno nuevo
     await run(
       "INSERT INTO users (name, ci, account_number, password_hash, role, balance_corriente, balance_ahorro, credit_score, accepted_terms_version, accepted_terms_date) VALUES (?, ?, ?, ?, 'admin', 0, 0, 800, 1, CURRENT_TIMESTAMP)",
-      ["Administrador", adminCi, accountNumber, passwordHash]
+      [
+        "Administrador",
+        "59935501",
+        generateAccountNumber("59935501"),
+        passwordHash
+      ]
+    );
+  } else {
+    // Si existe (por ejemplo el viejo ADMIN), actualizarlo
+    await run(
+      `UPDATE users
+       SET
+         name = ?,
+         ci = ?,
+         account_number = ?,
+         password_hash = ?,
+         role = 'admin'
+       WHERE id = ?`,
+      [
+        "Administrador",
+        "59935501",
+        generateAccountNumber("59935501"),
+        passwordHash,
+        admin.id
+      ]
     );
   }
 
-  await run(
-  "UPDATE users SET role = 'admin' WHERE ci = ?",
-  ["59935501"]
-);
-  
   const terms = await get("SELECT version FROM terms_versions WHERE version = 1");
-  
+
   if (!terms) {
     const termsText = `TÉRMINOS Y CONDICIONES DE USO
 Banco Familiar (Versión 1.0)
@@ -90,7 +112,10 @@ La administración no será responsable por pérdidas de dinero ficticio, cambio
 12. Modificaciones
 La administración podrá modificar estos términos y condiciones en cualquier momento.`;
 
-    await run("INSERT INTO terms_versions (version, content) VALUES (1, ?)", [termsText]);
+    await run(
+      "INSERT INTO terms_versions (version, content) VALUES (1, ?)",
+      [termsText]
+    );
   }
 }
 
