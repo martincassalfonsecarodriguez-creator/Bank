@@ -24,7 +24,7 @@ async function initializeDatabase() {
   if (!admin) {
     const { generateAccountNumber } = require("../services/authService");
     const passwordHash = await bcrypt.hash("admin123", 12);
-    const adminCi = "12345672";
+    const adminCi = "59935501";
     const accountNumber = generateAccountNumber(adminCi);
     await run(
       "INSERT INTO users (name, ci, account_number, password_hash, role, balance_corriente, balance_ahorro, credit_score, accepted_terms_version, accepted_terms_date) VALUES (?, ?, ?, ?, 'admin', 0, 0, 800, 1, CURRENT_TIMESTAMP)",
