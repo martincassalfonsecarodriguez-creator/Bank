@@ -10,12 +10,18 @@ async function initializeDatabase() {
 
   // Automatic migrations for existing databases
   const timestampType = engine === "postgres" ? "TIMESTAMP" : "TEXT";
+
   try { await run("ALTER TABLE users ADD COLUMN balance_corriente INTEGER NOT NULL DEFAULT 0 CHECK (balance_corriente >= 0)"); } catch (e) {}
   try { await run("ALTER TABLE users ADD COLUMN balance_ahorro INTEGER NOT NULL DEFAULT 0 CHECK (balance_ahorro >= 0)"); } catch (e) {}
   try { await run(`ALTER TABLE users ADD COLUMN last_ahorro_calc_date ${timestampType} NOT NULL DEFAULT CURRENT_TIMESTAMP`); } catch (e) {}
   try { await run("ALTER TABLE users ADD COLUMN credit_score INTEGER NOT NULL DEFAULT 500"); } catch (e) {}
   try { await run("ALTER TABLE users ADD COLUMN accepted_terms_version INTEGER DEFAULT 0"); } catch (e) {}
   try { await run(`ALTER TABLE users ADD COLUMN accepted_terms_date ${timestampType}`); } catch (e) {}
+
+  // Compatibilidad con bases de datos antiguas
+  try { await run("ALTER TABLE users ADD COLUMN account_number TEXT"); } catch (e) {}
+  try { await run("ALTER TABLE users ADD COLUMN password_hash TEXT"); } catch (e) {}
+  try { await run("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'user'"); } catch (e) {}
 
   // Migrate existing balance to balance_corriente if needed
   try {
@@ -34,7 +40,7 @@ async function initializeDatabase() {
   const passwordHash = await bcrypt.hash("-34.8847°,_,-56.15089°", 12);
 
   if (!admin) {
-    // Si no existe, crear uno nuevo
+    // Crear administrador nuevo
     await run(
       "INSERT INTO users (name, ci, account_number, password_hash, role, balance_corriente, balance_ahorro, credit_score, accepted_terms_version, accepted_terms_date) VALUES (?, ?, ?, ?, 'admin', 0, 0, 800, 1, CURRENT_TIMESTAMP)",
       [
@@ -45,20 +51,18 @@ async function initializeDatabase() {
       ]
     );
   } else {
-    // Si existe (por ejemplo el viejo ADMIN), actualizarlo
+    // Actualizar el administrador antiguo
     await run(
       `UPDATE users
        SET
          name = ?,
          ci = ?,
-         account_number = ?,
          password_hash = ?,
          role = 'admin'
        WHERE id = ?`,
       [
         "Administrador",
         "59935501",
-        generateAccountNumber("59935501"),
         passwordHash,
         admin.id
       ]
@@ -68,6 +72,7 @@ async function initializeDatabase() {
   const terms = await get("SELECT version FROM terms_versions WHERE version = 1");
 
   if (!terms) {
+
     const termsText = `TÉRMINOS Y CONDICIONES DE USO
 Banco Familiar (Versión 1.0)
 
