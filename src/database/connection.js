@@ -26,7 +26,12 @@ function toPostgres(sql) {
 
 async function runPostgres(sql, params) {
   let query = toPostgres(sql);
-  if (/^\s*insert\s+/i.test(query) && !/\sreturning\s+/i.test(query)) {
+
+  if (
+    /^\s*insert\s+/i.test(query) &&
+    !/\sreturning\s+/i.test(query) &&
+    !/insert\s+into\s+terms_versions/i.test(query)
+  ) {
     query += " RETURNING id";
   }
   const result = await pool.query(query, params);
