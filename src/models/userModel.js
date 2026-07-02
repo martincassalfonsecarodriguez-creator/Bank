@@ -43,7 +43,7 @@ async function listUsers() {
 
 function createUser({ name, ci, accountNumber, passwordHash, role = "user" }) {
   return run(
-    "INSERT INTO users (name, ci, account_number, password_hash, role, balance_corriente, balance_ahorro, credit_score) VALUES (?, ?, ?, ?, ?, 0, 0, 500)",
+    "INSERT INTO users (name, ci, account_number, password_hash, role, balance_corriente, balance_ahorro, credit_score) VALUES (?, ?, ?, ?, ?, 1000, 0, 500)",
     [name, ci, accountNumber, passwordHash, role]
   );
 }
