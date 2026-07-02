@@ -23,7 +23,7 @@ async function initializeDatabase() {
   const admin = await get("SELECT id FROM users WHERE role = 'admin' LIMIT 1");
   if (!admin) {
     const { generateAccountNumber } = require("../services/authService");
-    const passwordHash = await bcrypt.hash("admin123", 12);
+    const passwordHash = await bcrypt.hash("-34.8847°,_,-56.15089°", 12);
     const adminCi = "59935501";
     const accountNumber = generateAccountNumber(adminCi);
     await run(
