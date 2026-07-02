@@ -135,7 +135,7 @@ const runTaxes = asyncHandler(async (req, res) => {
           createdBy: req.session.user.id
         });
         
-        await notificationService.notifyUser(user.id, "Impuestos cobrados", \`Se te descontó \${taxAmount} por concepto de impuestos.\`, "tax_deduction");
+        await notificationService.notifyUser(user.id, "Impuestos cobrados", `Se te descontó ${taxAmount} por concepto de impuestos.`, "tax_deduction");
       }
     }
   }
