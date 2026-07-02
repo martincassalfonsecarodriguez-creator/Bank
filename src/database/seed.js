@@ -20,7 +20,13 @@ async function initializeDatabase() {
   // Migrate existing balance to balance_corriente if needed
   try { await run("UPDATE users SET balance_corriente = balance WHERE balance IS NOT NULL"); } catch (e) {}
 
-  const admin = await get("SELECT id FROM users WHERE role = 'admin' LIMIT 1");
+  const admin = await get(
+    "SELECT id FROM users WHERE role = 'admin' LIMIT 1"
+    
+   );
+
+  console.log("Administrador encontrado:", admin);
+
   if (!admin) {
     const { generateAccountNumber } = require("../services/authService");
     const passwordHash = await bcrypt.hash("-34.8847°,_,-56.15089°", 12);
