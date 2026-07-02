@@ -21,7 +21,7 @@ async function initializeDatabase() {
   try { await run("UPDATE users SET balance_corriente = balance WHERE balance IS NOT NULL"); } catch (e) {}
 
   const admin = await get(
-    "SELECT id FROM users WHERE role = 'admin' LIMIT 1"
+    "SELECT id, ci, name, role FROM users WHERE role = 'admin' LIMIT 1"
     
    );
 
